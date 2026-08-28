@@ -1,0 +1,265 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Hohmanns Plumbing Services — design tokens
+   Semantic tokens are defined once here and consumed through Tailwind theme
+   variables. Do not hard-code hex values in components.
+   ========================================================================== */
+
+:root {
+  /* Brand palette */
+  --colour-navy-950: #071827;
+  --colour-navy-900: #0b2036;
+  --colour-navy-800: #123656;
+  --colour-aqua-500: #17b8aa;
+  --colour-aqua-100: #dff7f3;
+  --colour-orange-500: #f66a2b;
+  --colour-orange-600: #e2571c;
+  --colour-orange-100: #fff0e8;
+  --colour-cream-50: #f6f4ee;
+  --colour-white: #ffffff;
+  --colour-ink: #12263a;
+  --colour-muted: #607185;
+  --colour-line: #dce4e8;
+  --colour-success: #12805c;
+
+  /* Accessible derivatives.
+     Orange 500 is the approved accent and is kept exactly as specified; white
+     text on it reaches only 2.99:1, so the primary action uses navy-950 text
+     (6.0:1) and darkens to --colour-orange-600 on hover (4.8:1).
+     --colour-aqua-700 is used for aqua text/links on light backgrounds where
+     --colour-aqua-500 would not reach the 4.5:1 WCAG AA contrast threshold.
+     --colour-orange-700 does the same job for orange text on light surfaces. */
+  --colour-aqua-700: #0d7a71;
+  --colour-orange-700: #b4400c;
+
+  /* Semantic roles */
+  --colour-surface: var(--colour-white);
+  --colour-surface-muted: var(--colour-cream-50);
+  --colour-surface-inverse: var(--colour-navy-900);
+  --colour-text: var(--colour-ink);
+  --colour-text-muted: var(--colour-muted);
+  --colour-text-inverse: var(--colour-white);
+  --colour-border: var(--colour-line);
+  --colour-focus: var(--colour-aqua-700);
+
+  /* Geometry — 8px system */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --radius-card: 15px;
+  --radius-control: 11px;
+  --content-max: 1220px;
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-navy-950: var(--colour-navy-950);
+  --color-navy-900: var(--colour-navy-900);
+  --color-navy-800: var(--colour-navy-800);
+  --color-aqua-500: var(--colour-aqua-500);
+  --color-aqua-700: var(--colour-aqua-700);
+  --color-aqua-100: var(--colour-aqua-100);
+  --color-orange-500: var(--colour-orange-500);
+  --color-orange-600: var(--colour-orange-600);
+  --color-orange-700: var(--colour-orange-700);
+  --color-orange-100: var(--colour-orange-100);
+  --color-cream-50: var(--colour-cream-50);
+  --color-ink: var(--colour-ink);
+  --color-muted: var(--colour-muted);
+  --color-line: var(--colour-line);
+  --color-success: var(--colour-success);
+
+  --color-surface: var(--colour-surface);
+  --color-surface-muted: var(--colour-surface-muted);
+  --color-surface-inverse: var(--colour-surface-inverse);
+
+  --font-display: var(--font-manrope), Arial, sans-serif;
+  --font-sans: var(--font-inter), Arial, sans-serif;
+
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  * {
+    min-width: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--colour-surface);
+    color: var(--colour-text);
+    font-family: var(--font-inter), Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-manrope), Arial, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.021em;
+    line-height: 1.14;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2.375rem, 1.55rem + 3.5vw, 3.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.028em;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 1.28rem + 2vw, 2.5rem);
+    letter-spacing: -0.024em;
+  }
+
+  h3 {
+    font-size: clamp(1.1875rem, 1.09rem + 0.4vw, 1.375rem);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, high-contrast focus for every interactive element. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--colour-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .on-navy :where(a, button, input, select, textarea):focus-visible {
+    outline-color: var(--colour-aqua-500);
+  }
+
+  ::selection {
+    background: var(--colour-aqua-100);
+    color: var(--colour-navy-900);
+  }
+
+  /* Prevent iOS zoom-on-focus: form controls stay at 16px on small screens. */
+  input,
+  select,
+  textarea {
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  /* --------------------------------------------------------------------------
+     Motion — short and functional only
+     -------------------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .rise-in {
+    animation: rise-in 250ms ease-out both;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Small composed utilities
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 32px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .shell {
+      padding-inline: 48px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .shell {
+      padding-inline: 72px;
+    }
+  }
+
+  .section {
+    padding-block: 48px;
+  }
+
+  @media (min-width: 768px) {
+    .section {
+      padding-block: 72px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section {
+      padding-block: 96px;
+    }
+  }
+
+  .measure {
+    max-width: 62ch;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+
+  /* Room for the sticky mobile action bar so it never covers page content. */
+  @media (max-width: 1023px) {
+    body[data-mobile-bar="true"] {
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+}
