@@ -346,15 +346,35 @@ noreferrer"` on the only external link (Google Maps directions).
 
 ## Deployment
 
-Not deployed, and no external service is connected. When the site is ready:
+Any Node host that supports Next.js 16 works; the project is deployed on
+Vercel from `github.com/Omar-Majeed/Plumber-Work`.
+
+### Environment variables on the host
+
+`NEXT_PUBLIC_SITE_URL` drives every canonical URL, Open Graph URL and sitemap
+entry. **Either set it to the real domain or leave it out entirely — do not
+create it with an empty value.** A blank variable used to crash the build
+(`new URL("")` throws while Next collects page data); `resolveSiteUrl` in
+`src/lib/site-config.ts` now treats blank as unset and falls back to Vercel's
+`VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`, then localhost. That is
+covered by `tests/unit/site-config.test.ts`.
+
+So on Vercel you can simply not set it and canonicals will point at the
+deployment domain, or set it to `https://your-domain.com.au` once the real
+domain is live.
+
+`SITE_STAGE` is unset by default, which means **demo stage** — and demo stage
+serves `robots.txt` with `Disallow: /`. That is deliberate while content is
+unconfirmed. Set `SITE_STAGE=production` only after
+`npm run validate:production` passes; the `prebuild` gate enforces it.
+
+### Before going live
 
 1. Complete `CONTENT_CONFIRMATION.md`.
-2. Set `NEXT_PUBLIC_SITE_URL` to the confirmed canonical domain.
-3. Set `SITE_STAGE=production` and confirm `npm run build` passes the gate.
+2. Set `NEXT_PUBLIC_SITE_URL` to the confirmed domain.
+3. Set `SITE_STAGE=production` and confirm the build passes the gate.
 4. Configure the enquiry delivery adapter and a shared rate-limit store.
-5. Deploy to any Node host that supports Next.js 16 (Vercel, or `next start`
-   behind a reverse proxy).
-6. Submit `sitemap.xml`, and verify the Google Business Profile.
+5. Submit `sitemap.xml` and verify the Google Business Profile.
 
 ## Launch checklist
 
