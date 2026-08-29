@@ -8,8 +8,7 @@ export function ProposedServices() {
       <div className="shell flex flex-col gap-8 md:gap-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeading
-            eyebrow="What we do"
-            title="Plumbing, drainage and gas — all from one team."
+            title="Plumbing, drainage and gas from one team."
             intro={
               <p>
                 Domestic repairs, hot water, blocked drains and licensed gas work,

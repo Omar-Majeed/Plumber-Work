@@ -77,7 +77,6 @@ export default function TermsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Legal"
         title="Website terms"
         crumbs={crumbs}
         intro={<p>The terms that apply to your use of this website.</p>}

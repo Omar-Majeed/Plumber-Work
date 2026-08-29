@@ -35,7 +35,7 @@ export function ServiceAreas() {
             ))}
           </ul>
           <p className="measure text-sm text-[var(--colour-muted)]">
-            Not on the list? Call {business.phone.display} and ask — if we cannot
+            Not on the list? Call {business.phone.display} and ask. If we cannot
             get to you we will say so straight away.
           </p>
           <CallButton size="md" variant="primary" className="w-fit" />

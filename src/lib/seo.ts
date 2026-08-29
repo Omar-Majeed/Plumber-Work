@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { business, profile } from "@/content/business";
+import { business } from "@/content/business";
 import { allFaqItems } from "@/content/faqs";
 import { absoluteUrl, siteUrl } from "@/lib/site-config";
 
@@ -45,11 +45,14 @@ export function pageMetadata({
 /**
  * LocalBusiness (Plumber) structured data.
  *
- * Kept in step with what the page actually says. Hours, email and service
- * areas mirror the sample profile in `content/business.ts`; the coordinates
- * come from the business's own Google Maps listing. Aggregate ratings, reviews
- * and price range stay omitted until the business supplies verified values —
- * see CONTENT_CONFIRMATION.md.
+ * Carries only what the page itself publishes and the business has confirmed:
+ * name, legal name, phone, postal address and ABN, plus a link to the business's
+ * own Google Maps listing.
+ *
+ * Deliberately omitted, because none of it is confirmed: openingHoursSpecification,
+ * geo coordinates, areaServed, aggregateRating, review and priceRange. Markup that
+ * asserts more than the page does is exactly the kind of claim a search engine
+ * penalises and a business cannot stand behind. See CONTENT_CONFIRMATION.md.
  */
 export function plumberStructuredData() {
   return {
@@ -60,7 +63,6 @@ export function plumberStructuredData() {
     legalName: business.legalName,
     url: siteUrl,
     telephone: business.phone.e164,
-    email: profile.email,
     taxID: business.abn,
     vatID: business.abn,
     address: {
@@ -71,30 +73,7 @@ export function plumberStructuredData() {
       postalCode: business.address.postcode,
       addressCountry: business.address.countryCode,
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "07:00",
-        closes: "16:30",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Saturday"],
-        opens: "08:00",
-        closes: "12:00",
-      },
-    ],
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: business.geo.latitude,
-      longitude: business.geo.longitude,
-    },
     hasMap: business.googleMaps.placeUrl,
-    areaServed: profile.serviceAreas.map((area) => ({
-      "@type": "City",
-      name: area,
-    })),
   };
 }
 

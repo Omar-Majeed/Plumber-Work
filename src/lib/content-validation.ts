@@ -42,7 +42,7 @@ export function validateContent(
 
 export function formatValidationReport(result: ContentValidationResult): string {
   const lines: string[] = [
-    `Content validation — stage: ${result.stage}`,
+    `Content validation, stage: ${result.stage}`,
     `Facts tracked: ${result.total} | confirmed: ${result.confirmed} | awaiting confirmation: ${
       result.total - result.confirmed
     }`,

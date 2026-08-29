@@ -1,10 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { business, profile } from "@/content/business";
+import { business } from "@/content/business";
 
 export const runtime = "nodejs";
-export const alt = `${business.displayName} — ${business.descriptor}, ${business.address.locality}`;
+export const alt = `${business.displayName}, ${business.descriptor}, ${business.address.locality}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -76,7 +76,7 @@ export default async function OpengraphImage() {
           {business.phone.display}
         </div>
         <div style={{ display: "flex", color: "#FFFFFF", opacity: 0.7 }}>
-          {profile.hoursSummary}
+          {business.address.locality}
         </div>
       </div>
     </div>,

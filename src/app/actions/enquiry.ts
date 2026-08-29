@@ -90,7 +90,7 @@ export async function submitEnquiry(
     // Demo stage: nothing leaves the server. Never imply the business got this.
     return {
       status: "demo",
-      message: "Demo only — this enquiry has not been sent.",
+      message: "Demo only. This enquiry has not been sent.",
       fieldErrors: {},
     };
   }
@@ -117,7 +117,7 @@ export async function submitEnquiry(
 
   return {
     status: "sent",
-    message: "Thanks — your enquiry has been sent.",
+    message: "Thanks, your enquiry has been sent.",
     fieldErrors: {},
   };
 }

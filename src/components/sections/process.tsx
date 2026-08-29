@@ -1,67 +1,38 @@
+import { siteCopy } from "@/content/business";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { CallPanel } from "@/components/sections/call-panel";
-import { business } from "@/content/business";
 
-const steps = [
-  {
-    title: "Call or send an enquiry",
-    copy: "Tell us what the problem is, where it is, and how urgent it feels. Photos help if you have them.",
-  },
-  {
-    title: "We book a time and price the job",
-    copy: "You get a time window and, for scheduled work, a fixed price in writing before anyone starts.",
-  },
-  {
-    title: "The job gets done and left clean",
-    copy: "Drop sheets down, the work explained when we finish, and 12 months of workmanship warranty behind it.",
-  },
-] as const;
-
+/**
+ * Three-step enquiry process.
+ *
+ * No CTA and no call panel: the contact section below is the single closing
+ * conversion area, and repeating the phone button here is what made the
+ * previous page feel relentless.
+ */
 export function Process() {
   return (
-    <section className="section bg-white">
-      <div className="shell grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-14">
-        <div className="flex flex-col gap-8">
-          <SectionHeading
-            eyebrow="A simple enquiry process"
-            title="Know what happens next."
-            intro={
-              <p>
-                Three steps between picking up the phone and having it sorted — no
-                quoting portal, no chasing.
-              </p>
-            }
-          />
-          <ol className="flex flex-col">
-            {steps.map((step, index) => (
-              <li
-                key={step.title}
-                className="flex gap-4 border-t border-[var(--colour-line)] py-5 first:border-t-0 first:pt-0"
-              >
-                <span
-                  aria-hidden="true"
-                  className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-[var(--colour-aqua-500)] font-[family-name:var(--font-display)] text-sm text-[var(--colour-aqua-700)]"
-                >
-                  {index + 1}
-                </span>
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-[1.0625rem] text-[var(--colour-navy-900)]">
-                    <span className="sr-only">{`Step ${index + 1}: `}</span>
-                    {step.title}
-                  </h3>
-                  <p className="measure text-[0.9375rem] text-[var(--colour-muted)]">
-                    {step.copy}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+    <section className="section bg-[var(--colour-cream-50)]">
+      <div className="shell reveal flex flex-col gap-10">
+        <SectionHeading title="How an enquiry works." />
 
-        <CallPanel
-          heading="Need a plumber in Rockhampton today?"
-          copy={`Call ${business.displayName} on ${business.phone.display} and speak to someone in the office, not a call centre.`}
-        />
+        <ol className="grid gap-x-10 gap-y-8 md:grid-cols-3">
+          {siteCopy.process.map((step, position) => (
+            <li key={step.title} className="flex flex-col gap-3">
+              <span
+                aria-hidden="true"
+                className="font-[family-name:var(--font-display)] text-[2rem] leading-none font-medium text-[var(--colour-aqua-500)]"
+              >
+                {position + 1}
+              </span>
+              <h3 className="text-[1.0625rem] text-[var(--colour-navy-900)]">
+                <span className="sr-only">{`Step ${position + 1}: `}</span>
+                {step.title}
+              </h3>
+              <p className="text-[0.9375rem] leading-relaxed text-[var(--colour-muted)]">
+                {step.detail}
+              </p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

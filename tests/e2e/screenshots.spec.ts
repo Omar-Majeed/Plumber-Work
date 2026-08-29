@@ -8,6 +8,24 @@ import { test, type Page } from "@playwright/test";
 /** Scrolls the whole page so lazy-loaded images are decoded before capture. */
 async function settle(page: Page) {
   await page.waitForLoadState("networkidle");
+
+  /*
+   * Pin every ambient animation to its finished state.
+   *
+   * Scroll-driven reveals are progressed by scroll position, and a full-page
+   * screenshot does not scroll: without this, sections below the fold are
+   * captured at opacity 0 and the QA evidence comes out blank. The Ken Burns
+   * drift is pinned too, so repeat runs are comparable rather than catching
+   * the photograph at a different point in its zoom.
+   */
+  await page.addStyleTag({
+    content: `
+      .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .ken-burns { animation: none !important; }
+      *, *::before, *::after { transition-duration: 0s !important; }
+    `,
+  });
+
   await page.evaluate(async () => {
     const step = window.innerHeight;
     for (let y = 0; y < document.body.scrollHeight; y += step) {
@@ -19,12 +37,14 @@ async function settle(page: Page) {
   await page.waitForTimeout(600);
 }
 
+/** The six sizes the homepage specification requires QA evidence at. */
 const viewports = [
   { name: "desktop-1440x900", width: 1440, height: 900 },
+  { name: "desktop-1280x800", width: 1280, height: 800 },
   { name: "small-desktop-1024x768", width: 1024, height: 768 },
   { name: "tablet-768x1024", width: 768, height: 1024 },
   { name: "mobile-390x844", width: 390, height: 844 },
-  { name: "small-mobile-360x800", width: 360, height: 800 },
+  { name: "small-mobile-320x568", width: 320, height: 568 },
 ];
 
 for (const viewport of viewports) {

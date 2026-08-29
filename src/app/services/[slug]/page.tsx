@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Check, CircleAlert, Clock, Phone } from "lucide-react";
-import { business, directionsUrl, profile } from "@/content/business";
+import { ArrowRight, Check, CircleAlert, Phone } from "lucide-react";
+import { business, directionsUrl } from "@/content/business";
 import { getRelatedServices, getService, services } from "@/content/services";
 import { PageHeader } from "@/components/sections/page-header";
-import { CallPanel } from "@/components/sections/call-panel";
 import { PhotoImage } from "@/components/ui/photo";
 import { servicePhotos } from "@/content/photos";
 import { CallButton } from "@/components/ui/call-button";
@@ -36,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return pageMetadata({
-    title: `${service.title} — Rockhampton`,
+    title: `${service.title} in Rockhampton`,
     description: `${service.summary} Call ${business.displayName} on ${business.phone.display} for ${service.title.toLowerCase()} in ${business.address.locality}.`,
     path: `/services/${service.slug}`,
   });
@@ -125,7 +124,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               <p className="measure text-[0.9375rem] text-[var(--colour-muted)]">
                 General guidance on this problem area, so you can describe the job
                 accurately when you call. It is not advice about your specific
-                situation — that needs a look.
+                situation. That needs a look.
               </p>
               <ul className="flex flex-col gap-2">
                 {service.indicators.map((indicator) => (
@@ -178,12 +177,6 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-6 lg:sticky lg:top-28">
-            <CallPanel
-              heading={`Book ${service.title.toLowerCase()} in Rockhampton`}
-              copy={`Call ${business.phone.display} and speak to the office, or send the enquiry form and we will ring you back.`}
-              callLabel={`Call ${business.phone.display}`}
-            />
-
             <div className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-[var(--colour-line)] bg-[var(--colour-cream-50)] p-6">
               <h2 className="text-[1.0625rem] text-[var(--colour-navy-900)]">
                 Office details
@@ -210,29 +203,6 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                   <span className="sr-only"> (opens in a new tab)</span>
                 </a>
               </address>
-              <ul className="flex flex-col gap-1 border-t border-[var(--colour-line)] pt-4 text-[0.9375rem] text-[var(--colour-muted)]">
-                {profile.openingHours.map((entry) => (
-                  <li key={entry.days} className="flex justify-between gap-3">
-                    <span>{entry.days}</span>
-                    <span
-                      className={
-                        entry.closed
-                          ? ""
-                          : "font-medium text-[var(--colour-navy-900)]"
-                      }
-                    >
-                      {entry.hours}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="flex items-start gap-2 text-sm text-[var(--colour-muted)]">
-                <Clock
-                  aria-hidden="true"
-                  className="mt-0.5 size-4 shrink-0 text-[var(--colour-aqua-700)]"
-                />
-                {profile.afterHours.detail}
-              </p>
             </div>
           </div>
         </div>
@@ -241,11 +211,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       {related.length > 0 ? (
         <section className="section bg-[var(--colour-cream-50)]">
           <div className="shell flex flex-col gap-8">
-            <SectionHeading
-              eyebrow="Related"
-              title="Other work we take on"
-              as="h2"
-            />
+            <SectionHeading title="Other work we take on" as="h2" />
             <ul className="grid gap-4 sm:grid-cols-2">
               {related.map((item) => (
                 <li key={item.slug}>

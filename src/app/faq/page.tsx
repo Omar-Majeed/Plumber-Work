@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { HelpCircle } from "lucide-react";
-import { business, profile } from "@/content/business";
+import { business } from "@/content/business";
 import { faqGroups } from "@/content/faqs";
 import { PageHeader } from "@/components/sections/page-header";
-import { FinalCta } from "@/components/sections/final-cta";
+import { ContactSection } from "@/components/sections/contact-section";
 import { CallButton } from "@/components/ui/call-button";
-import { ButtonLink } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   breadcrumbStructuredData,
@@ -21,7 +18,7 @@ const crumbs = [
 
 export const metadata: Metadata = pageMetadata({
   title: "Frequently asked questions",
-  description: `Booking, pricing, warranties, after-hours call-outs and service areas — answers from ${business.displayName} in ${business.address.locality}. Call ${business.phone.display}.`,
+  description: `Contact, services, location and safety questions answered by ${business.displayName} in ${business.address.locality}. Call ${business.phone.display}.`,
   path: "/faq",
 });
 
@@ -29,24 +26,16 @@ export default function FaqPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Frequently asked questions"
         title="The questions we get asked most."
         crumbs={crumbs}
         intro={
           <p>
-            Booking, pricing, warranties, urgent problems and the area we cover. If
-            your question is not here, ring the office on {business.phone.display}{" "}
-            and ask.
+            Contacting the business, the services covered, where it is located, and
+            what to do first in an urgent situation. If your question is not here,
+            call {business.phone.display} and ask.
           </p>
         }
-        actions={
-          <>
-            <CallButton size="lg" variant="primary" />
-            <ButtonLink href="/contact#enquiry" size="lg" variant="outline-inverse">
-              Request a callback
-            </ButtonLink>
-          </>
-        }
+        actions={<CallButton size="lg" variant="primary" />}
       />
 
       <section className="section bg-white">
@@ -89,12 +78,12 @@ export default function FaqPage() {
 
                 <div className="flex flex-col divide-y divide-[var(--colour-line)] rounded-[var(--radius-card)] border border-[var(--colour-line)]">
                   {group.items.map((item) => (
-                    <details key={item.question} className="group p-5">
+                    <details key={item.question} className="disclosure group p-5">
                       <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-[1.0625rem] font-medium text-[var(--colour-navy-900)]">
                         {item.question}
                         <span
                           aria-hidden="true"
-                          className="mt-0.5 shrink-0 text-[var(--colour-aqua-700)] transition-transform duration-200 group-open:rotate-45"
+                          className="mt-0.5 shrink-0 text-[var(--colour-aqua-700)] transition-transform duration-300 group-open:rotate-45"
                         >
                           +
                         </span>
@@ -107,36 +96,11 @@ export default function FaqPage() {
                 </div>
               </div>
             ))}
-
-            <aside className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-[var(--colour-line)] bg-[var(--colour-cream-50)] p-6">
-              <HelpCircle
-                aria-hidden="true"
-                className="size-6 text-[var(--colour-aqua-700)]"
-                strokeWidth={1.5}
-              />
-              <h2 className="text-[1.0625rem] text-[var(--colour-navy-900)]">
-                Still not sure?
-              </h2>
-              <p className="measure text-[0.9375rem] text-[var(--colour-muted)]">
-                The office is open {profile.hoursSummary}. Describe the problem and
-                we will tell you whether it needs a visit, and what it is likely to
-                involve.
-              </p>
-              <div className="flex flex-col gap-3 pt-1 sm:flex-row">
-                <CallButton size="md" variant="primary" />
-                <Link
-                  href="/contact#enquiry"
-                  className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--colour-line)] bg-white px-4 text-[0.9375rem] font-medium text-[var(--colour-navy-900)] transition-colors duration-200 hover:border-[var(--colour-aqua-700)] hover:text-[var(--colour-aqua-700)]"
-                >
-                  Send an enquiry
-                </Link>
-              </div>
-            </aside>
           </div>
         </div>
       </section>
 
-      <FinalCta />
+      <ContactSection />
       <JsonLd data={breadcrumbStructuredData(crumbs)} />
       <JsonLd data={faqStructuredData()} />
     </>

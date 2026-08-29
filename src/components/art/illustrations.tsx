@@ -3,12 +3,12 @@ import { cn } from "@/lib/cn";
 /**
  * Stylised service-area map.
  *
- * Drawn for this site in the brand palette — technical line work on a navy
+ * Drawn for this site in the brand palette, technical line work on a navy
  * ground, the way a plumbing schematic reads. It sits behind the Google Maps
  * embed as its loading state, so the map frame is never blank.
  *
  * The service and vehicle illustrations that used to live here were replaced
- * by photography — see `src/content/photos.ts`.
+ * by photography, see `src/content/photos.ts`.
  */
 
 const LINE = "var(--colour-aqua-500)";
@@ -69,7 +69,7 @@ export function MapPanel({ className }: SceneProps) {
       >
         <Grid id="map" />
 
-        {/* river — the Fitzroy bend through town */}
+        {/* river, the Fitzroy bend through town */}
         <path
           d="M-10 96q70 6 110 44t92 40q52 2 84-30t134-26v34q-96-6-128 26t-96 30q-64-2-100-40T-10 132z"
           fill={LINE}

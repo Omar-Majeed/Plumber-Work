@@ -11,7 +11,7 @@ const cells = [
   {
     icon: Clock,
     label: "Open today",
-    value: "7:00am – 4:30pm",
+    value: "7:00am - 4:30pm",
     note: "After-hours call-outs available",
   },
   {

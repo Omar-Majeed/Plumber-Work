@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { services } from "@/content/services";
@@ -5,13 +6,33 @@ import { PhotoImage } from "@/components/ui/photo";
 import { servicePhotos } from "@/content/photos";
 import { ServiceIcon } from "@/components/ui/service-icon";
 
-/** Content-driven service grid, shared by the home page and /services. */
-export function ServiceGrid() {
+/**
+ * Content-driven service grid, shared by the home page and /services.
+ *
+ * The card heading level is a prop because the two pages nest it differently:
+ * on the home page the cards sit under an "Our services" h2, on /services they
+ * sit directly under the page h1. Hard-coding h3 skips a level on /services.
+ */
+export function ServiceGrid({
+  headingLevel: CardHeading = "h3",
+}: {
+  headingLevel?: "h2" | "h3";
+} = {}) {
   return (
     <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {services.map((service) => (
-        <li key={service.slug} className="flex">
-          <article className="group flex w-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-[var(--colour-line)] bg-white transition-colors duration-200 hover:border-[var(--colour-aqua-700)]">
+      {services.map((service, position) => (
+        <li
+          key={service.slug}
+          className="reveal flex"
+          // Scroll-driven reveals stagger by shifting the scroll range, not by
+          // delaying in time. Capped so the last card is never far behind.
+          style={
+            {
+              "--reveal-shift": `${Math.min(position, 5) * 4}%`,
+            } as CSSProperties
+          }
+        >
+          <article className="group flex w-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-[var(--colour-line)] bg-white transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[var(--colour-aqua-700)] hover:shadow-[0_18px_40px_-28px_rgba(7,24,39,0.55)]">
             <PhotoImage
               photo={servicePhotos[service.slug]!}
               ratio="4 / 3"
@@ -23,7 +44,9 @@ export function ServiceGrid() {
             <div className="flex flex-1 flex-col gap-2.5 p-5">
               <div className="flex items-center gap-3">
                 <ServiceIcon name={service.icon} className="size-9" />
-                <h3 className="text-[var(--colour-navy-900)]">{service.title}</h3>
+                <CardHeading className="text-[1.375rem] text-[var(--colour-navy-900)]">
+                  {service.title}
+                </CardHeading>
               </div>
               <p className="text-[0.9375rem] text-[var(--colour-muted)]">
                 {service.summary}

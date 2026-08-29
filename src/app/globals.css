@@ -174,10 +174,14 @@
 
     *,
     *::before,
-    *::after {
+    *::after,
+    /* The universal selector does not reach ::details-content, so the
+       disclosure would keep animating for someone who asked it not to. */
+    details::details-content {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
       scroll-behavior: auto !important;
     }
   }
@@ -195,6 +199,121 @@
 
   .rise-in {
     animation: rise-in 250ms ease-out both;
+  }
+
+  /* --------------------------------------------------------------------------
+     Ambient motion
+     -------------------------------------------------------------------------- */
+
+  /* Slow drift across a hero photograph. Runs only on the active slide, so
+     inactive slides cost nothing while they are hidden. */
+  @keyframes ken-burns {
+    from {
+      transform: scale(1) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1.09) translate3d(0, -1%, 0);
+    }
+  }
+
+  .ken-burns {
+    animation: ken-burns 14s ease-out both;
+    will-change: transform;
+  }
+
+  /* Section reveal on scroll.
+
+     Implemented with a CSS scroll-driven animation rather than an
+     IntersectionObserver, for two reasons: it runs off the main thread, and a
+     browser without support simply renders the content in its final state.
+     There is no JavaScript in the path, so content is never left invisible if
+     a script fails, and nothing here can shift layout: only opacity and a
+     small translate are animated.
+
+     The range finishes early (entry 45%) so an element is fully opaque well
+     before it reaches the middle of the viewport. */
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        /* A scroll-driven animation is progressed by scroll position, not by
+           time, so `animation-delay` does nothing here. Staggering a group
+           means shifting each item's range instead, which is what
+           `--reveal-shift` does. */
+        --reveal-shift: 0%;
+        animation: reveal-in linear both;
+        animation-timeline: view();
+        animation-range: entry calc(5% + var(--reveal-shift))
+          entry calc(45% + var(--reveal-shift));
+      }
+    }
+  }
+
+  /* Smooth disclosure for the FAQ.
+
+     `interpolate-size` lets the browser animate to and from `auto`, and
+     `allow-discrete` carries `content-visibility` across the transition so the
+     panel animates closed as well as open. Browsers without support keep the
+     native snap, which is correct behaviour, just not animated. */
+  /* Printing has no scrollport to drive a reveal, so pin them visible. */
+  @media print {
+    .reveal {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .ken-burns {
+      animation: none !important;
+    }
+  }
+
+  @supports (interpolate-size: allow-keywords) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+
+    /* The easing matters more than the duration here. A front-loaded curve
+       (the one the hero slides use) covers most of the distance in the first
+       fifth of the time, which reads as a pop rather than a glide, so this
+       uses a gentle symmetric ease over a longer run. */
+    details.disclosure::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 420ms cubic-bezier(0.4, 0, 0.2, 1),
+        content-visibility 420ms allow-discrete;
+    }
+
+    details.disclosure[open]::details-content {
+      block-size: auto;
+    }
+
+    /* The answer settles into place just behind the panel, so the text glides
+       in rather than being revealed by a moving edge. */
+    details.disclosure > :not(summary) {
+      opacity: 0;
+      transform: translateY(-6px);
+      transition:
+        opacity 260ms ease,
+        transform 380ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    details.disclosure[open] > :not(summary) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 90ms;
+    }
   }
 }
 
@@ -254,12 +373,5 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1.4;
-  }
-
-  /* Room for the sticky mobile action bar so it never covers page content. */
-  @media (max-width: 1023px) {
-    body[data-mobile-bar="true"] {
-      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-    }
   }
 }

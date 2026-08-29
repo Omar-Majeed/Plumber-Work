@@ -156,8 +156,7 @@ export function EnquiryForm({
         className,
       )}
     >
-      <p className="eyebrow text-[var(--colour-aqua-700)]">Quick enquiry</p>
-      <Heading className="mt-2 text-[1.375rem] text-[var(--colour-navy-900)]">
+      <Heading className="text-[1.375rem] text-[var(--colour-navy-900)]">
         What can we help with?
       </Heading>
       <p className="mt-2 text-sm text-[var(--colour-muted)]">

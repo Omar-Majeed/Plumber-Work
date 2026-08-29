@@ -3,13 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 import { business } from "@/content/business";
-import { ConceptRibbon } from "@/components/layout/concept-ribbon";
-import { MobileActionBar } from "@/components/layout/mobile-action-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { plumberStructuredData } from "@/lib/seo";
-import { showDemoRibbon, siteUrl } from "@/lib/site-config";
+import { siteUrl } from "@/lib/site-config";
 
 /**
  * Fonts are self-hosted variable subsets (latin) served from the app bundle,
@@ -61,7 +59,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-AU" className={`${manrope.variable} ${inter.variable}`}>
-      <body data-mobile-bar="true">
+      <body>
         <a
           href="#main"
           className="sr-only rounded-[var(--radius-control)] focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:bg-white focus:px-4 focus:py-2.5 focus:text-[var(--colour-navy-900)] focus:ring-2 focus:ring-[var(--colour-aqua-700)]"
@@ -69,7 +67,6 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        {showDemoRibbon ? <ConceptRibbon /> : null}
         <SiteHeader />
 
         <main id="main" tabIndex={-1}>
@@ -77,7 +74,6 @@ export default function RootLayout({
         </main>
 
         <SiteFooter />
-        <MobileActionBar />
         <JsonLd data={plumberStructuredData()} />
       </body>
     </html>

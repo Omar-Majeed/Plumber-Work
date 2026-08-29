@@ -142,7 +142,7 @@ test("the enquiry form validates and never claims a demo message was sent", asyn
   await page.getByRole("button", { name: "Request a callback" }).click();
 
   await expect(page.getByRole("status")).toContainText(
-    "Demo only — this enquiry has not been sent.",
+    "Demo only. This enquiry has not been sent.",
   );
   await expect(page.getByText(/thanks|we.ll be in touch/i)).toHaveCount(0);
 });
@@ -184,11 +184,21 @@ test("structured data matches the page and omits unverified social proof", async
   expect(plumber).toBeTruthy();
   expect(plumber.telephone).toBe("+61749224351");
   expect(plumber.taxID).toBe("48 324 274 959");
-  // Hours and service areas are published because the page states them.
-  expect(plumber.openingHoursSpecification).toHaveLength(2);
-  expect(Array.isArray(plumber.areaServed)).toBe(true);
-  // Unverified social proof and pricing stay out of the markup.
-  for (const forbidden of ["aggregateRating", "review", "priceRange"]) {
+  expect(plumber.legalName).toBe("Hohmanns Plumbing Services P/L");
+  expect(plumber.address.streetAddress).toBe("290 Bolsover Street");
+  expect(plumber.hasMap).toContain("cid=2882896361346668586");
+
+  // The markup may not assert more than the page does. None of these has been
+  // confirmed by the business, so none of them appears.
+  for (const forbidden of [
+    "aggregateRating",
+    "review",
+    "priceRange",
+    "openingHoursSpecification",
+    "areaServed",
+    "geo",
+    "email",
+  ]) {
     expect(plumber[forbidden]).toBeUndefined();
   }
 });
@@ -206,7 +216,7 @@ test("the FAQ page publishes FAQPage markup that matches its questions", async (
     .find((data) => data["@type"] === "FAQPage");
 
   expect(faq).toBeTruthy();
-  expect(faq.mainEntity.length).toBeGreaterThan(15);
+  expect(faq.mainEntity.length).toBeGreaterThan(8);
 
   const firstQuestion = faq.mainEntity[0].name;
   await expect(
@@ -214,14 +224,30 @@ test("the FAQ page publishes FAQPage markup that matches its questions", async (
   ).toBeVisible();
 });
 
-test("sample testimonials are labelled as samples", async ({ page }) => {
+test("no fabricated review or testimonial content is published", async ({
+  page,
+}) => {
   await page.goto("/");
-  await expect(page.getByText("Sample layout.")).toBeVisible();
-  await expect(page.getByText("sample", { exact: true }).first()).toBeVisible();
+  const body = (await page.locator("body").innerText()).toLowerCase();
+  for (const forbidden of [
+    "placeholder name",
+    "sample layout",
+    "demo",
+    "pending client confirmation",
+    "to be confirmed",
+    "lorem ipsum",
+  ]) {
+    expect(body).not.toContain(forbidden);
+  }
+  await expect(page.locator('[data-testid="review-card"]')).toHaveCount(0);
 });
 
 test("the contact page embeds the business's Google Map", async ({ page }) => {
   await page.goto("/contact");
+
+  // The map is a facade: Google is not contacted until the visitor asks.
+  await expect(page.locator('iframe[src*="maps.google.com"]')).toHaveCount(0);
+  await page.getByRole("button", { name: /show interactive map/i }).click();
 
   const map = page.locator('iframe[src*="maps.google.com"]');
   await expect(map).toHaveCount(1);
@@ -233,21 +259,14 @@ test("the contact page embeds the business's Google Map", async ({ page }) => {
   expect(csp).toContain("frame-src 'self' https://www.google.com");
 });
 
-test("structured data carries the listing coordinates", async ({ page }) => {
+test("the directions link uses the listing coordinates", async ({ page }) => {
   await page.goto("/");
-  const blocks = await page
-    .locator('script[type="application/ld+json"]')
-    .allTextContents();
-  const plumber = blocks
-    .map((block) => JSON.parse(block))
-    .find((data) => data["@type"] === "Plumber");
-
-  expect(plumber.geo).toMatchObject({
-    "@type": "GeoCoordinates",
-    latitude: -23.3835283,
-    longitude: 150.5154954,
-  });
-  expect(plumber.hasMap).toContain("cid=2882896361346668586");
+  const directions = page.getByRole("link", { name: /get directions/i }).first();
+  await expect(directions).toHaveAttribute(
+    "href",
+    /destination=-23\.3835283%2C150\.5154954/,
+  );
+  await expect(directions).toHaveAttribute("rel", /noopener/);
 });
 
 test("service cards carry photography with a responsive srcset", async ({
@@ -284,8 +303,8 @@ test("the desktop Services dropdown lists every service", async ({ page }) => {
   const panel = page.locator(`#${panelId}`);
   // Six services plus the "All services" link.
   await expect(panel.getByRole("link")).toHaveCount(7);
-  await expect(panel.getByRole("link", { name: /Blocked drains/ })).toBeVisible();
-  await expect(panel.getByRole("link", { name: /All services/ })).toBeVisible();
+  await expect(panel.getByRole("link", { name: /Blocked Drains/i })).toBeVisible();
+  await expect(panel.getByRole("link", { name: /All services/i })).toBeVisible();
 
   await page.keyboard.press("Escape");
   await expect(trigger).toHaveAttribute("aria-expanded", "false");
@@ -301,14 +320,12 @@ test("the dropdown navigates to a service page", async ({ page }) => {
     .getByRole("button", { name: "Services" })
     .click();
   await page
-    .getByRole("link", { name: /Hot water systems/ })
+    .getByRole("link", { name: /Hot Water Systems/i })
     .first()
     .click();
 
   await expect(page).toHaveURL(/\/services\/hot-water-systems$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Hot water systems",
-  );
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/hot water/i);
 });
 
 test("the mobile menu expands the services sub-list", async ({ page }) => {
@@ -334,11 +351,11 @@ test.describe("hero carousel", () => {
     await page.goto("/");
 
     const carousel = page.getByRole("region", {
-      name: "Hohmanns Plumbing Services highlights",
+      name: "Highlights",
     });
     await expect(carousel).toBeVisible();
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("h1")).toContainText("one direct call away");
+    await expect(page.locator("h1")).toContainText("one direct call");
 
     // Three slides, only the first exposed.
     const slides = carousel.locator('[aria-roledescription="slide"]');
@@ -354,7 +371,7 @@ test.describe("hero carousel", () => {
     ).toBeVisible();
     for (let n = 1; n <= 3; n += 1) {
       await expect(
-        carousel.getByRole("button", { name: `Go to slide ${n} of 3` }),
+        carousel.getByRole("button", { name: new RegExp(`^Slide ${n}:`) }),
       ).toBeVisible();
     }
   });
@@ -362,20 +379,20 @@ test.describe("hero carousel", () => {
   test("next, previous and the dots change slide", async ({ page }) => {
     await page.goto("/");
     const carousel = page.getByRole("region", {
-      name: "Hohmanns Plumbing Services highlights",
+      name: "Highlights",
     });
     const slides = carousel.locator('[aria-roledescription="slide"]');
 
     await carousel.getByRole("button", { name: "Next slide" }).click();
     await expect(slides.nth(1)).not.toHaveAttribute("aria-hidden", "true");
     await expect(carousel.getByRole("heading", { level: 2 }).first()).toContainText(
-      "Start here",
+      "The right starting point",
     );
 
     await carousel.getByRole("button", { name: "Previous slide" }).click();
     await expect(slides.first()).not.toHaveAttribute("aria-hidden", "true");
 
-    await carousel.getByRole("button", { name: "Go to slide 3 of 3" }).click();
+    await carousel.getByRole("button", { name: /^Slide 3:/ }).click();
     await expect(slides.nth(2)).not.toHaveAttribute("aria-hidden", "true");
     // Slide 3 states only confirmed facts.
     await expect(carousel).toContainText("290 Bolsover Street");
@@ -385,7 +402,7 @@ test.describe("hero carousel", () => {
   test("arrow keys work inside the carousel only", async ({ page }) => {
     await page.goto("/");
     const carousel = page.getByRole("region", {
-      name: "Hohmanns Plumbing Services highlights",
+      name: "Highlights",
     });
     const slides = carousel.locator('[aria-roledescription="slide"]');
 
@@ -404,7 +421,7 @@ test.describe("hero carousel", () => {
   test("autoplay advances, and pauses while hovered", async ({ page }) => {
     await page.goto("/");
     const carousel = page.getByRole("region", {
-      name: "Hohmanns Plumbing Services highlights",
+      name: "Highlights",
     });
     const slides = carousel.locator('[aria-roledescription="slide"]');
 
@@ -425,21 +442,34 @@ test.describe("hero carousel", () => {
   }) => {
     await page.goto("/");
     const carousel = page.getByRole("region", {
-      name: "Hohmanns Plumbing Services highlights",
+      name: "Highlights",
     });
     const links = carousel.locator('a[href^="tel:"]');
     const count = await links.count();
-    expect(count).toBe(3); // one per slide
+    // The CTA hierarchy puts one call action in the hero, on slide 1.
+    expect(count).toBe(1);
     for (let i = 0; i < count; i += 1) {
       await expect(links.nth(i)).toHaveAttribute("href", PHONE_HREF);
     }
   });
 
-  test("the callback CTA reaches the enquiry form", async ({ page }) => {
+  test("no slide carries more than two actions", async ({ page }) => {
+    await page.goto("/");
+    const slides = page
+      .getByRole("region", { name: "Highlights" })
+      .locator('[aria-roledescription="slide"]');
+
+    for (let i = 0; i < 3; i += 1) {
+      const actions = slides.nth(i).locator("a[href]");
+      expect(await actions.count()).toBeLessThanOrEqual(2);
+    }
+  });
+
+  test("the enquiry CTA reaches the enquiry form", async ({ page }) => {
     await page.goto("/");
     await page
-      .getByRole("region", { name: "Hohmanns Plumbing Services highlights" })
-      .getByRole("link", { name: "Request a callback" })
+      .getByRole("region", { name: "Highlights" })
+      .getByRole("link", { name: /send an enquiry/i })
       .click();
 
     await expect(page).toHaveURL(/#enquiry$/);
@@ -455,7 +485,7 @@ test.describe("hero carousel with reduced motion", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     const slides = page
-      .getByRole("region", { name: "Hohmanns Plumbing Services highlights" })
+      .getByRole("region", { name: "Highlights" })
       .locator('[aria-roledescription="slide"]');
 
     await page.waitForTimeout(9500);
@@ -469,4 +499,19 @@ test("keyboard users reach the skip link first", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Skip to main content" }),
   ).toBeFocused();
+});
+
+test("the call action is reachable without scrolling on a short phone", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/");
+
+  const call = page
+    .getByRole("region", { name: "Highlights" })
+    .locator('a[href^="tel:"]')
+    .first();
+  const box = await call.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.y + box!.height).toBeLessThanOrEqual(568);
 });

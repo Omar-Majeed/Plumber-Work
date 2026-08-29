@@ -23,7 +23,7 @@ export function ConceptRibbon() {
       <div className="shell flex items-center justify-between gap-3 py-2">
         <p className="text-[0.8125rem] leading-snug">
           <span className="font-medium">Website concept</span>
-          {" — services and business details pending client confirmation."}
+          {". Services and business details pending client confirmation."}
         </p>
         <button
           type="button"

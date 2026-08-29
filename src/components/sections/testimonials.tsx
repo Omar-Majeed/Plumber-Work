@@ -9,7 +9,7 @@ import { isDemoStage } from "@/lib/site-config";
  * The quotes in `src/content/reviews.ts` are samples written for the demo, so
  * they are attributed to a placeholder name and are filtered out entirely once
  * SITE_STAGE=production. Publishing invented reviews under a real trading name
- * is not something this site will do — connect the business's verified review
+ * is not something this site will do, connect the business's verified review
  * source and they publish themselves.
  */
 export function Testimonials() {
@@ -19,7 +19,6 @@ export function Testimonials() {
     <section className="section bg-[var(--colour-cream-50)]">
       <div className="shell flex flex-col gap-8">
         <SectionHeading
-          eyebrow="Customer feedback"
           title="What people say afterwards."
           intro={
             reviewsAreSamples && isDemoStage ? (
@@ -27,8 +26,8 @@ export function Testimonials() {
                 <span className="font-medium text-[var(--colour-navy-900)]">
                   Sample layout.
                 </span>{" "}
-                These quotes are placeholders so the section can be reviewed —
-                connect the business&rsquo;s verified review source before launch.
+                These quotes are placeholders so the section can be reviewed.
+                Connect the business&rsquo;s verified review source before launch.
                 They are never rendered in a production build.
               </p>
             ) : undefined
@@ -36,9 +35,12 @@ export function Testimonials() {
         />
 
         {hasReviews ? (
-          <ul className="grid gap-5 md:grid-cols-3">
-            {visibleReviews.map((review) => (
-              <li key={review.quote.slice(0, 32)} className="flex">
+          <ul className="grid gap-5 lg:grid-cols-2">
+            {visibleReviews.map((review, position) => (
+              <li
+                key={review.quote.slice(0, 32)}
+                className={position === 0 ? "flex lg:col-span-2" : "flex"}
+              >
                 <figure className="flex w-full flex-col gap-4 rounded-[var(--radius-card)] border border-[var(--colour-line)] bg-white p-6">
                   <div className="flex items-center justify-between gap-3">
                     <span
@@ -62,7 +64,13 @@ export function Testimonials() {
                       strokeWidth={1.75}
                     />
                   </div>
-                  <blockquote className="text-[0.9375rem] text-[var(--colour-ink)]">
+                  <blockquote
+                    className={
+                      position === 0
+                        ? "measure text-[1.25rem] leading-[1.5] text-[var(--colour-ink)]"
+                        : "text-[0.9375rem] text-[var(--colour-ink)]"
+                    }
+                  >
                     {review.quote}
                   </blockquote>
                   <figcaption className="mt-auto flex flex-col gap-0.5 border-t border-[var(--colour-line)] pt-4 text-sm">

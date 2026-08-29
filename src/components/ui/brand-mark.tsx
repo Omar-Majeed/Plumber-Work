@@ -48,7 +48,7 @@ export function Logo({
             ? "/brand/hohmanns-logo-inverse.png"
             : "/brand/hohmanns-logo.png"
         }
-        alt={decorative ? "" : `${business.displayName} — ${business.descriptor}`}
+        alt={decorative ? "" : `${business.displayName}, ${business.descriptor}`}
         width={LOCKUP.width}
         height={LOCKUP.height}
         priority={priority}

@@ -1,13 +1,13 @@
-import { proposedFact, type ContentFact } from "@/lib/content-facts";
+import { confirmedFact, type ContentFact } from "@/lib/content-facts";
 
 /**
  * Service catalogue.
  *
- * SAMPLE CONTENT: these six categories and their copy were written for the
- * demo. The public listing confirms the trade category "Plumbers & Gasfitters"
- * and nothing more, so every entry still carries `requiresConfirmation: true`
- * and the production content gate blocks a release until the business signs
- * them off.
+ * The six categories below are the service list confirmed for publication in
+ * the production homepage specification. Copy describes the work itself: it
+ * makes no claim about availability, response times, licence numbers,
+ * insurance, warranties or coverage area, none of which the business has
+ * supplied.
  *
  * Adding, removing, renaming or reordering a service is a change to this file
  * only — the grid, the detail pages, the sitemap, the form dropdown and the
@@ -47,11 +47,11 @@ export interface Service {
 export const services: readonly Service[] = [
   {
     slug: "general-plumbing-and-repairs",
-    title: "General plumbing and repairs",
+    title: "General Plumbing & Repairs",
     headline: "General plumbing and repairs in Rockhampton",
     icon: "wrench",
     summary:
-      "Everyday plumbing work around the house or workplace — taps, toilets, fixtures and the small repairs that keep adding up.",
+      "Everyday plumbing work around the house or workplace: taps, toilets, fixtures and the small repairs that keep adding up.",
     intro: [
       "General plumbing covers the ordinary, unglamorous jobs that make a building work: a tap that will not stop dripping, a toilet that runs all night, a mixer that has lost its temperature control, a new fixture that needs connecting properly.",
       "Most of these jobs are small on their own. Grouping them into one visit is usually the practical way to handle them, and it is worth describing everything on your list when you call.",
@@ -80,7 +80,7 @@ export const services: readonly Service[] = [
       {
         question: "Should I turn the water off before help arrives?",
         answer:
-          "If water is escaping and you can safely reach the isolation tap for that fixture — or the main tap at the meter — turning it off limits the damage while you arrange an inspection.",
+          "If water is escaping, turning off the isolation tap for that fixture (or the main tap at the meter) limits the damage while you arrange an inspection.",
       },
     ],
     related: ["leaks-and-burst-pipes", "blocked-drains"],
@@ -88,7 +88,7 @@ export const services: readonly Service[] = [
   },
   {
     slug: "blocked-drains",
-    title: "Blocked drains",
+    title: "Blocked Drains",
     headline: "Blocked drains and slow-running waste",
     icon: "drain",
     summary:
@@ -131,7 +131,7 @@ export const services: readonly Service[] = [
   },
   {
     slug: "hot-water-systems",
-    title: "Hot water systems",
+    title: "Hot Water Systems",
     headline: "Hot water systems: repair and replacement",
     icon: "hot-water",
     summary:
@@ -150,11 +150,11 @@ export const services: readonly Service[] = [
       "Element, thermostat and valve replacement",
       "Gas, electric, solar and heat-pump changeovers",
       "Relief valve and tempering valve servicing",
-      "Like-for-like replacement, usually same day",
-      "Manufacturer warranty registered for you",
+      "Like-for-like replacement and removal of the old unit",
+      "Manufacturer warranty paperwork passed on to you",
     ],
     promise:
-      "Most changeovers are finished the same day, with the old unit taken away.",
+      "The unit is matched to the connections and the space you already have.",
     faqs: [
       {
         question: "What details should I have ready about my unit?",
@@ -172,7 +172,7 @@ export const services: readonly Service[] = [
   },
   {
     slug: "gas-fitting",
-    title: "Gas fitting",
+    title: "Gas Fitting",
     headline: "Gas fitting and gas appliance connections",
     icon: "gas",
     summary:
@@ -195,7 +195,7 @@ export const services: readonly Service[] = [
       "Compliance certificate issued on completion",
     ],
     promise:
-      "Licensed gas work, with the compliance paperwork handed over on the day.",
+      "Gas work in Queensland is licensed work, and compliance documentation is part of it.",
     faqs: [
       {
         question: "What should I do if I can smell gas?",
@@ -205,7 +205,7 @@ export const services: readonly Service[] = [
       {
         question: "Do I need paperwork after gas work?",
         answer:
-          "Gas work in Queensland requires the licensed gas fitter to issue compliance documentation. Keep it — insurers, appliance warranties and future buyers all ask for it.",
+          "Gas work in Queensland requires the licensed gas fitter to issue compliance documentation. Keep it: insurers, appliance warranties and future buyers all ask for it.",
       },
     ],
     related: ["hot-water-systems", "general-plumbing-and-repairs"],
@@ -213,7 +213,7 @@ export const services: readonly Service[] = [
   },
   {
     slug: "leaks-and-burst-pipes",
-    title: "Leaks and burst pipes",
+    title: "Leaks & Burst Pipes",
     headline: "Water leaks and burst pipes",
     icon: "leak",
     summary:
@@ -235,7 +235,7 @@ export const services: readonly Service[] = [
       "Burst and split pipe repair or replacement",
       "Meter checks to confirm the leak is gone",
     ],
-    promise: "Water off first, source found second, repair third — in that order.",
+    promise: "Water off first, source found second, repair third, in that order.",
     faqs: [
       {
         question: "How can I check for a leak myself?",
@@ -253,7 +253,7 @@ export const services: readonly Service[] = [
   },
   {
     slug: "commercial-plumbing-and-maintenance",
-    title: "Commercial plumbing and maintenance",
+    title: "Commercial Plumbing & Maintenance",
     headline: "Commercial plumbing and maintenance",
     icon: "commercial",
     summary:
@@ -306,13 +306,13 @@ export function getRelatedServices(service: Service): readonly Service[] {
 
 export const serviceFacts: readonly ContentFact<unknown>[] = services.map(
   (service) =>
-    proposedFact({
+    confirmedFact({
       id: `service.${service.slug}`,
       label: `Confirm the business offers "${service.title}"`,
       category: "service",
       value: service.title,
       source:
-        "Proposed for the demo — the public listing confirms the category 'Plumbers & Gasfitters' only",
+        "Confirmed in the production homepage specification supplied by the business",
       productionVisible: true,
       affects: ["/", "/services", `/services/${service.slug}`],
     }),

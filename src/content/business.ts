@@ -3,23 +3,24 @@ import { confirmedFact, proposedFact, type ContentFact } from "@/lib/content-fac
 /**
  * Single source of truth for business identity.
  *
- * `business` holds the five details confirmed against the public listing for
- * Hohmanns Plumbing Services P/L (research snapshot: 27 August 2026). The
- * listing is reference data only — nothing here is fetched at runtime.
+ * Everything published to a visitor is derived from the five details confirmed
+ * against the public business listing for Hohmanns Plumbing Services P/L
+ * (research snapshot: 27 August 2026). The listing is reference data only;
+ * nothing here is fetched at runtime.
  *
- * `profile` holds realistic SAMPLE content used to present the site as a
- * finished product. Every value in `profile` is a placeholder written for the
- * demo and must be replaced with the business's own details before launch —
- * each one is tracked in `businessFacts` below and in CONTENT_CONFIRMATION.md,
- * and the production content gate blocks a release until they are confirmed.
+ * Deliberately absent, because none of it has been supplied by the business:
+ * opening hours, emergency or after-hours availability, response-time or
+ * same-day claims, a QBCC licence number, insurance or membership badges,
+ * years in business, team size, ownership history, pricing or warranty
+ * promises, and a service radius. Nothing on this site may state any of those
+ * until the business confirms them.
  *
- * No phone number or address literal may appear anywhere else in the codebase.
+ * No phone number, address or ABN literal may appear anywhere else in the
+ * codebase.
  */
 
 const LISTING_SOURCE =
   "Public business listing, Yellow Pages (research snapshot, 27 August 2026)";
-const SAMPLE_SOURCE =
-  "Sample content written for the demo — replace with the business's own details";
 
 export const business = {
   legalName: "Hohmanns Plumbing Services P/L",
@@ -41,7 +42,9 @@ export const business = {
     country: "Australia",
     countryCode: "AU",
     /** Canonical single-line form used in body copy. */
-    singleLine: "290 Bolsover Street, Rockhampton City, QLD 4700",
+    singleLine: "290 Bolsover Street, Rockhampton City QLD 4700",
+    /** Shorter form for tight spaces such as the hero supporting line. */
+    shortLine: "290 Bolsover Street, Rockhampton City",
     /** Canonical multi-line form used in the footer and contact page. */
     lines: [
       "290 Bolsover Street",
@@ -58,7 +61,7 @@ export const business = {
    * Ltd" (CID 2882896361346668586). Using coordinates rather than a text
    * address means the pin and the directions link are unambiguous.
    *
-   * NOTE — address discrepancy to resolve: Google lists the business at
+   * NOTE, address discrepancy to resolve: Google lists the business at
    * 290 Bolsover **Lane**, while the Yellow Pages listing says 290 Bolsover
    * **Street**. Google also spells the name "Hohmann's ... Pty Ltd". Tracked in
    * CONTENT_CONFIRMATION.md; the coordinates below are correct either way.
@@ -80,140 +83,12 @@ export const business = {
  *
  * Uses the keyless `output=embed` endpoint, so there is no API key to leak and
  * nothing to bill. The iframe is lazy-loaded, so Google is only contacted once
- * a visitor scrolls the map into view — see `components/ui/google-map.tsx` and
+ * a visitor scrolls the map into view. See `components/ui/google-map.tsx` and
  * the disclosure in the privacy policy.
  */
 export const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
   `${business.geo.latitude},${business.geo.longitude}`,
 )}&z=16&hl=en&output=embed`;
-
-/* ------------------------------------------------------------------------- */
-/* SAMPLE PROFILE — replace before launch                                     */
-/* ------------------------------------------------------------------------- */
-
-export interface OpeningHours {
-  readonly days: string;
-  readonly hours: string;
-  readonly closed?: boolean;
-}
-
-export const profile = {
-  /** Shown as the public email address. */
-  email: "office@hohmannsplumbing.com.au",
-
-  established: 1998,
-  establishedLabel: "Serving Rockhampton since 1998",
-
-  openingHours: [
-    { days: "Monday – Friday", hours: "7:00am – 4:30pm" },
-    { days: "Saturday", hours: "8:00am – 12:00pm" },
-    { days: "Sunday", hours: "Closed", closed: true },
-  ] as readonly OpeningHours[],
-
-  /** Compact form used in the header strip and structured data. */
-  hoursSummary: "Mon–Fri 7:00am–4:30pm · Sat 8:00am–12:00pm",
-
-  afterHours: {
-    available: true,
-    label: "After-hours call-outs",
-    detail:
-      "Burst pipes, blocked sewers and gas faults are handled outside office hours. Call the same number and follow the prompts.",
-  },
-
-  credentials: {
-    /**
-     * Deliberately no licence number.
-     *
-     * Publishing an invented QBCC licence number against a real trading name
-     * would be a fabricated credential, so the badge stays generic until the
-     * business supplies the real number and it has been checked against the
-     * QBCC public register. Add it here, then surface it in the footer.
-     */
-    qbccNumber: null as string | null,
-    badges: [
-      "QBCC licensed plumber & gasfitter",
-      "Public liability insured",
-      "Master Plumbers member",
-    ] as const,
-  },
-
-  promises: [
-    {
-      title: "Upfront pricing",
-      detail: "You approve the price before any work starts. No hourly surprises.",
-    },
-    {
-      title: "12-month workmanship warranty",
-      detail: "Every job is backed in writing, on top of manufacturer warranties.",
-    },
-    {
-      title: "Tidy finish",
-      detail: "Drop sheets down, boots off, and the site left clean.",
-    },
-    {
-      title: "Free written quotes",
-      detail: "On scheduled work — quoted on site or from photos where we can.",
-    },
-  ] as const,
-
-  stats: [
-    { value: "25+", label: "Years in Rockhampton" },
-    { value: "6", label: "Licensed tradespeople" },
-    { value: "60km", label: "Service radius" },
-    { value: "12mth", label: "Workmanship warranty" },
-  ] as const,
-
-  serviceAreas: [
-    "Rockhampton City",
-    "North Rockhampton",
-    "Frenchville",
-    "Norman Gardens",
-    "Park Avenue",
-    "Berserker",
-    "Wandal",
-    "Allenstown",
-    "The Range",
-    "Kawana",
-    "Gracemere",
-    "Parkhurst",
-    "Yeppoon",
-    "Emu Park",
-    "Mount Morgan",
-  ] as const,
-
-  serviceRadiusNote:
-    "Based in Rockhampton City and working across the region, from Gracemere out to the Capricorn Coast.",
-
-  payment: {
-    methods: ["Cash", "EFTPOS", "Visa & Mastercard", "Bank transfer"] as const,
-    terms:
-      "Payment on completion for domestic work, 14-day terms for account customers.",
-  },
-
-  story: [
-    "Hohmanns Plumbing Services has worked out of Bolsover Street since the late nineties, and most of the work still comes from people who have used us before or been sent by a neighbour.",
-    "The jobs are the ordinary ones: a hot water unit that quit on a Sunday, a drain that has been slow for months, a gas cooktop that needs connecting properly. We turn up when we say we will, explain what we found, and give you the price before we start.",
-    "It is a small team, which is deliberate. You are dealing with the people doing the work, not a call centre, and the tradesperson who quoted the job is usually the one who does it.",
-  ] as const,
-
-  values: [
-    {
-      title: "Straight answers",
-      detail:
-        "If a repair will only buy you six months, we say so. If it is worth repairing, we say that too.",
-    },
-    {
-      title: "One point of contact",
-      detail:
-        "Ring the office and you get someone in Rockhampton who knows the job you booked.",
-    },
-    {
-      title: "Priced before we start",
-      detail:
-        "You see the number and agree to it first. Variations get discussed, not assumed.",
-    },
-  ] as const,
-} as const;
 
 /**
  * Directions link. Built from the listing's coordinates rather than the address
@@ -223,7 +98,74 @@ export const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination
   `${business.geo.latitude},${business.geo.longitude}`,
 )}`;
 
-export const emailHref = `mailto:${profile.email}`;
+/**
+ * Published copy.
+ *
+ * Every line below restates a verified fact or describes how to make contact.
+ * None of it asserts availability, credentials, history, pricing or coverage.
+ */
+export const siteCopy = {
+  /** Local business introduction, home page. */
+  introduction: [
+    `${business.legalName} is a plumbing and gasfitting business at ${business.address.singleLine}.`,
+    "Work is arranged directly with the business. Call the office, or send an enquiry with the job and property details and the business will come back to you about the next step.",
+  ] as const,
+
+  /** Four factual reasons to make contact. No availability or credential claims. */
+  reasons: [
+    {
+      title: "A direct phone number",
+      detail: `Calls go straight to the business on ${business.phone.display}, not to a booking service.`,
+      icon: "phone",
+    },
+    {
+      title: "Based in Rockhampton City",
+      detail: `The business operates from ${business.address.street}, ${business.address.locality}.`,
+      icon: "map-pin",
+    },
+    {
+      title: "Plumbing and gasfitting",
+      detail:
+        "General repairs, blocked drains, hot water, gas fitting, leaks and commercial maintenance.",
+      icon: "wrench",
+    },
+    {
+      title: "Registered business details",
+      detail: `Trading as ${business.legalName}, ABN ${business.abn}.`,
+      icon: "badge",
+    },
+  ] as const,
+
+  /** Three-step enquiry process. Describes the process, promises no timing. */
+  process: [
+    {
+      title: "Call or send an enquiry",
+      detail: `Ring ${business.phone.display} during business hours, or use the enquiry form on this page.`,
+    },
+    {
+      title: "Share the job and location details",
+      detail:
+        "Describe what is happening, which fixture or area is affected, and the suburb or address of the property.",
+    },
+    {
+      title: "Discuss the next step with the business",
+      detail:
+        "The business will talk through what the job involves and what needs to happen next.",
+    },
+  ] as const,
+
+  /** Compact verified-fact strip, directly below the hero. */
+  verifiedStrip: [
+    { label: "Trade", value: business.descriptor, href: undefined },
+    { label: "Location", value: business.address.locality, href: undefined },
+    { label: "Phone", value: business.phone.display, href: business.phone.href },
+    { label: "ABN", value: business.abn, href: undefined },
+  ] as readonly {
+    readonly label: string;
+    readonly value: string;
+    readonly href?: string;
+  }[],
+} as const;
 
 export const businessFacts: readonly ContentFact<unknown>[] = [
   confirmedFact({
@@ -273,201 +215,67 @@ export const businessFacts: readonly ContentFact<unknown>[] = [
   }),
 
   /* ----------------------------------------------------------------------
-     Sample content. Each of these renders on the site as finished copy, so
-     each one blocks a production release until the business confirms it.
+     Outstanding items. None of these render as a claim anywhere on the site,
+     so none of them blocks a production release. Each one is content the
+     business can add later; until it arrives, the site simply stays silent
+     about it rather than publishing a plausible guess.
      ---------------------------------------------------------------------- */
   proposedFact({
     id: "business.openingHours",
-    label: "Opening hours (currently Mon–Fri 7:00–4:30, Sat 8:00–12:00)",
+    label: "Opening hours (not published; no hours are shown anywhere)",
     category: "availability",
-    value: profile.hoursSummary,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
+    value: null,
+    source: "Required from the business before any hours can be published",
+    productionVisible: false,
     affects: ["/", "/contact", "footer", "structured-data"],
   }),
   proposedFact({
     id: "business.afterHours",
-    label: "After-hours / emergency call-out availability",
+    label: "After-hours or emergency availability (not published)",
     category: "availability",
-    value: profile.afterHours.available,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/services", "/services/[slug]", "/faq", "header"],
+    value: null,
+    source: "Required from the business before any availability claim is made",
+    productionVisible: false,
+    affects: ["/", "/services", "/faq"],
   }),
   proposedFact({
     id: "business.qbccLicence",
-    label: "QBCC contractor licence number (no number is published yet)",
+    label: "QBCC contractor licence number (not published)",
     category: "credentials",
-    value: profile.credentials.qbccNumber,
+    value: null,
     source:
-      "Required from the business — verify against the QBCC public register before publishing a number",
-    productionVisible: true,
-    affects: ["/about", "footer", "structured-data"],
-  }),
-  proposedFact({
-    id: "business.credentialBadges",
-    label: "Licence, insurance and membership claims shown as badges",
-    category: "credentials",
-    value: profile.credentials.badges,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/about", "footer"],
-  }),
-  proposedFact({
-    id: "business.established",
-    label: 'Year established and "25+ years" claim',
-    category: "identity",
-    value: profile.established,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/about", "footer"],
-  }),
-  proposedFact({
-    id: "business.story",
-    label: "Company story, values and team size",
-    category: "identity",
-    value: profile.story,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/about"],
-  }),
-  proposedFact({
-    id: "business.stats",
-    label: "Headline statistics (years, team size, radius, warranty)",
-    category: "identity",
-    value: profile.stats,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/about"],
-  }),
-  proposedFact({
-    id: "business.serviceArea",
-    label: "Suburbs served and 60km travel radius",
-    category: "location",
-    value: profile.serviceAreas,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/services", "/faq", "structured-data"],
-  }),
-  proposedFact({
-    id: "business.pricing",
-    label: "Upfront pricing, free quotes and payment terms",
-    category: "pricing",
-    value: profile.promises,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/contact", "/faq", "/services/[slug]"],
-  }),
-  proposedFact({
-    id: "business.warranty",
-    label: "12-month workmanship warranty",
-    category: "pricing",
-    value: "12 months",
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/", "/about", "/faq"],
-  }),
-  proposedFact({
-    id: "content.faq",
-    label: "FAQ answers on /faq (booking, pricing, urgent, licensing, area)",
-    category: "service",
-    value: "faqGroups",
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/faq", "structured-data"],
+      "Required from the business. Verify against the QBCC public register before publishing a number",
+    productionVisible: false,
+    affects: ["footer", "/about"],
   }),
   proposedFact({
     id: "business.email",
-    label: "Public enquiry email address",
+    label:
+      "Public email address (not published; the enquiry form is the written path)",
     category: "contact",
-    value: profile.email,
-    source: SAMPLE_SOURCE,
-    productionVisible: true,
-    affects: ["/contact", "footer", "form-delivery", "structured-data"],
-  }),
-  proposedFact({
-    id: "business.socialProfiles",
-    label: "Social media profiles",
-    category: "social-proof",
     value: null,
-    source: "Required from the business — footer icons stay off until supplied",
+    source: "Required from the business before an address is published",
     productionVisible: false,
-    affects: ["footer", "structured-data"],
+    affects: ["footer", "/contact"],
   }),
   proposedFact({
     id: "business.reviews",
-    label: "Verified review source, rating and review count",
+    label: "Customer reviews (no review section is published)",
     category: "social-proof",
     value: null,
     source:
-      "Required from the business — the sample testimonials are demo-stage only and never render in production",
-    productionVisible: true,
+      "Required from the business. Connect a verified review source; invented quotations are never published",
+    productionVisible: false,
     affects: ["/"],
   }),
   proposedFact({
-    id: "business.addressDisplay",
-    label: "Confirmation that the street address may be published",
-    category: "location",
-    value: business.address.singleLine,
-    source:
-      "Required from the business — some trades prefer not to publish an address",
-    productionVisible: true,
-    affects: ["/", "/contact", "footer", "structured-data"],
-  }),
-  proposedFact({
-    id: "business.addressDiscrepancy",
-    label:
-      'Bolsover STREET (Yellow Pages) vs Bolsover LANE (Google), and "Hohmanns \u2026 P/L" vs "Hohmann\u2019s \u2026 Pty Ltd"',
-    category: "location",
-    value: business.address.street,
-    source:
-      "Two public sources disagree \u2014 confirm the correct street and legal-name spelling with the business, then fix it here and on the Google Business Profile",
-    productionVisible: true,
-    affects: [
-      "/",
-      "/contact",
-      "footer",
-      "structured-data",
-      "google-business-profile",
-    ],
-  }),
-  confirmedFact({
-    id: "business.geo",
-    label: "Map coordinates of the business's Google Maps listing",
-    category: "location",
-    value: `${business.geo.latitude}, ${business.geo.longitude}`,
-    source:
-      "Google Maps place listing, CID 2882896361346668586 (checked 27 August 2026)",
-    productionVisible: true,
-    affects: ["/", "/contact", "structured-data"],
-  }),
-  confirmedFact({
-    id: "asset.logo",
-    label: "Brand logo (supplied by the client as hohmanns-logo.png)",
-    category: "asset",
-    value: "public/brand/hohmanns-logo.png",
-    source:
-      "Supplied by the client, 27 August 2026. Inverse, mark-only and app-icon derivatives generated from it.",
-    productionVisible: true,
-    affects: ["header", "footer", "favicon", "open-graph"],
-  }),
-  proposedFact({
-    id: "asset.photography",
-    label: "Genuine owner / team / vehicle / completed-job photography",
+    id: "business.photography",
+    label: "Client-approved photography of the business, team and vehicles",
     category: "asset",
     value: null,
     source:
-      "Free-licence Unsplash stock is in place so the site reads as real. None of it shows this business, its team, its vans or its work — replace before launch.",
-    productionVisible: true,
-    affects: ["/", "/about", "/services/[slug]"],
+      "Licensed stock photography is in place. None of it shows this business, its team or its work; replace before launch",
+    productionVisible: false,
+    affects: ["/", "/about", "/services"],
   }),
-  proposedFact({
-    id: "legal.reviewedPolicies",
-    label: "Australian legal review of privacy policy and website terms",
-    category: "credentials",
-    value: null,
-    source: "Required before launch — templates only at present",
-    productionVisible: true,
-    affects: ["/privacy", "/terms"],
-  }),
-] as const;
+];

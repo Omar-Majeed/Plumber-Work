@@ -52,7 +52,7 @@ const sections: readonly LegalSection[] = [
   {
     heading: "Google Maps",
     paragraphs: [
-      "The contact page and the home page embed a Google Map showing where the business is. The map is only loaded once you scroll it into view — if you never reach it, nothing is requested from Google.",
+      "The contact page and the home page embed a Google Map showing where the business is. The map is only loaded once you scroll it into view. If you never reach it, nothing is requested from Google.",
       "When it does load, Google receives your IP address and may set its own cookies, under Google's privacy policy rather than this one. Use the \u201cGet directions\u201d link instead if you would prefer not to load it.",
     ],
   },
@@ -86,7 +86,6 @@ export default function PrivacyPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Legal"
         title="Privacy policy"
         crumbs={crumbs}
         intro={

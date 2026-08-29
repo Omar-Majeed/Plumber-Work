@@ -8,22 +8,60 @@ import { confirmedFact, proposedFact } from "@/lib/content-facts";
 
 describe("content validation gate", () => {
   it("never blocks the demo stage", () => {
-    const result = validateContent("demo");
-    expect(result.ok).toBe(true);
-    expect(result.blocking.length).toBeGreaterThan(0);
+    expect(validateContent("demo").ok).toBe(true);
   });
 
-  it("blocks production while proposed services are unconfirmed", () => {
+  /**
+   * The production invariant. Every claim the site publishes must be confirmed:
+   * if this fails, something unverified has been put in front of a visitor.
+   */
+  it("passes production with the project's real content", () => {
     const result = validateContent("production");
+    expect(result.blocking).toEqual([]);
+    expect(result.ok).toBe(true);
+  });
+
+  it("still blocks production when a visible fact is unconfirmed", () => {
+    const result = validateContent("production", [
+      ...allContentFacts,
+      proposedFact({
+        id: "test.visible-and-unconfirmed",
+        label: "Rendered to visitors but not signed off",
+        category: "availability",
+        value: "Open 24 hours",
+        source: "test",
+        productionVisible: true,
+        affects: ["/"],
+      }),
+    ]);
     expect(result.ok).toBe(false);
-    expect(result.blocking.some((fact) => fact.id.startsWith("service."))).toBe(
+    expect(result.blocking.map((fact) => fact.id)).toContain(
+      "test.visible-and-unconfirmed",
+    );
+  });
+
+  it("keeps outstanding items visible without blocking the release", () => {
+    const result = validateContent("production");
+    expect(result.pendingNonBlocking.length).toBeGreaterThan(0);
+    expect(result.pendingNonBlocking.every((fact) => !fact.productionVisible)).toBe(
       true,
     );
   });
 
   it("names every blocking item in the report", () => {
-    const report = formatValidationReport(validateContent("production"));
-    for (const fact of validateContent("production").blocking) {
+    const blocked = validateContent("production", [
+      proposedFact({
+        id: "test.blocking",
+        label: "Visible and unconfirmed",
+        category: "pricing",
+        value: "Fixed price",
+        source: "test",
+        productionVisible: true,
+        affects: ["/"],
+      }),
+    ]);
+    const report = formatValidationReport(blocked);
+    for (const fact of blocked.blocking) {
       expect(report).toContain(fact.id);
     }
   });
@@ -56,7 +94,7 @@ describe("content validation gate", () => {
   });
 
   it("tracks every business and service fact", () => {
-    expect(allContentFacts.length).toBeGreaterThan(20);
+    expect(allContentFacts.length).toBeGreaterThan(10);
     expect(
       allContentFacts.every((fact) => fact.id.length > 0 && fact.source.length > 0),
     ).toBe(true);

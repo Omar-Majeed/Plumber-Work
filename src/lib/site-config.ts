@@ -72,16 +72,6 @@ export function absoluteUrl(path = "/"): string {
   return `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-/**
- * The concept ribbon is opt-IN through configuration and never shown once the
- * site is running in the production stage. It is off by default so the demo
- * presents as a finished site; set NEXT_PUBLIC_SHOW_DEMO_BANNER=true while
- * reviewing to surface the "pending client confirmation" note.
- */
-export const showDemoRibbon =
-  readEnv(process.env.NEXT_PUBLIC_SHOW_DEMO_BANNER) === "true" &&
-  !isProductionStage;
-
 /** Outbound delivery provider for enquiry submissions. */
 export const contactDeliveryProvider =
   readEnv(process.env.CONTACT_DELIVERY_PROVIDER) ?? "disabled";

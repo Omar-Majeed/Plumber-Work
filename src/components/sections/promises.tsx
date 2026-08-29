@@ -11,12 +11,11 @@ export function Promises() {
     <section className="section bg-white">
       <div className="shell flex flex-col gap-8 md:gap-10">
         <SectionHeading
-          eyebrow="How we work"
           title="No surprises on the invoice."
           intro={
             <p>
-              The parts of a plumbing job people actually worry about — the price,
-              the mess, and whether it will hold — handled the same way every time.
+              The price, the mess, and whether it will hold. The three things
+              people actually worry about, handled the same way every time.
             </p>
           }
         />

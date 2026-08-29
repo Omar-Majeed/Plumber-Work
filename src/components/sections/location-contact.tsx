@@ -25,7 +25,6 @@ export function LocationContact({
       >
         <div className="flex flex-col gap-6">
           <SectionHeading
-            eyebrow="Find the business"
             title={`${business.address.locality}, Queensland`}
             as={headingLevel}
           />

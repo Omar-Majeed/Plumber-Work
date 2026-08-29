@@ -10,10 +10,15 @@ export interface NavItem {
 }
 
 export const primaryNavigation: readonly NavItem[] = [
+  { label: "Home", href: "/" },
   { label: "Services", href: "/services", menu: "services" },
   { label: "About", href: "/about" },
-  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
+];
+
+/** Secondary routes that stay reachable from the footer. */
+export const secondaryNavigation: readonly NavItem[] = [
+  { label: "Frequently asked questions", href: "/faq" },
 ];
 
 export const legalNavigation: readonly NavItem[] = [

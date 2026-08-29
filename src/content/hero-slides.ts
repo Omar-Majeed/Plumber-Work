@@ -1,112 +1,94 @@
 import { business, directionsUrl } from "@/content/business";
 import { heroPhotos, type HeroPhoto } from "@/content/hero-photos";
+import { services } from "@/content/services";
 
 /**
  * Hero carousel content.
  *
- * Three slides, kept as data so the component renders one template rather than
- * three near-identical blocks. Every business detail comes from
- * `content/business.ts` — nothing is retyped here.
- *
- * Copy is deliberately free of availability, pricing, licence, warranty,
- * response-time and review claims. Only the five confirmed facts (legal name,
- * trade category, phone, address, ABN) are stated.
+ * Three slides, one message each. Every claim restates a verified business
+ * fact or describes the site's own navigation; nothing here asserts
+ * availability, credentials, history or coverage.
  */
 
 export interface HeroAction {
   readonly label: string;
   readonly href: string;
-  readonly variant: "primary" | "outline-inverse";
-  /** Marks the telephone action so tests and analytics can find it. */
+  readonly variant: "primary" | "quiet";
   readonly isPhone?: boolean;
-}
-
-export interface HeroDetail {
-  readonly label: string;
-  readonly value: string;
+  readonly external?: boolean;
 }
 
 export interface HeroSlide {
   readonly id: string;
   readonly eyebrow: string;
   readonly heading: string;
-  readonly copy: string;
+  readonly body: string;
+  /** At most two actions, per the CTA hierarchy. */
   readonly actions: readonly HeroAction[];
-  /** Neutral enquiry categories — not a statement of services offered. */
-  readonly chips?: readonly string[];
-  /** Confirmed business details, shown on the local-proof slide. */
-  readonly details?: readonly HeroDetail[];
-  /** Stock photograph, or null to use the branded navy treatment. */
+  /** One short supporting line beneath the actions. */
+  readonly supporting?: string;
+  /**
+   * Full-bleed background. `null` uses the branded navy treatment, which is
+   * also the runtime fallback when a remote image fails to load.
+   */
   readonly photo: HeroPhoto | null;
-  /** The local-proof slide uses the map motif instead of a photograph. */
-  readonly visual: "photo" | "map";
 }
 
-const callAction: HeroAction = {
-  label: `Call ${business.phone.display}`,
-  href: business.phone.href,
-  variant: "primary",
-  isPhone: true,
-};
+/** Compact service line for slide 2, built from the catalogue. */
+const serviceLine = services.map((service) => service.title).join(" · ");
 
 export const heroSlides: readonly HeroSlide[] = [
   {
-    id: "local",
-    eyebrow: `${business.descriptor} · ${business.address.locality.replace(" City", "")}`,
-    heading: "Rockhampton plumbing, one direct call away.",
-    copy: `Contact ${business.displayName} for plumbing and gasfitting enquiries in Rockhampton.`,
+    id: "introduction",
+    eyebrow:
+      `${business.descriptor} · ${business.address.locality.replace(" City", "")}`.toUpperCase(),
+    heading: "Local plumbing help starts with one direct call.",
+    body: `Contact ${business.displayName} for plumbing and gasfitting services in ${business.address.locality.replace(" City", "")}.`,
     actions: [
-      callAction,
-      { label: "Request a callback", href: "#enquiry", variant: "outline-inverse" },
+      {
+        label: `Call ${business.phone.display}`,
+        href: business.phone.href,
+        variant: "primary",
+        isPhone: true,
+      },
+      { label: "Send an enquiry", href: "#enquiry", variant: "quiet" },
     ],
+    supporting: business.address.shortLine,
     photo: heroPhotos.slide1,
-    visual: "photo",
   },
   {
-    id: "enquiry",
-    eyebrow: "Start with the problem",
-    heading: "Plumbing or gasfitting issue? Start here.",
-    copy: "Tell us what is happening and where you are located. We will use your details to respond to your enquiry.",
-    actions: [
-      { label: "Request a callback", href: "#enquiry", variant: "primary" },
-      {
-        label: "Call now",
-        href: business.phone.href,
-        variant: "outline-inverse",
-        isPhone: true,
-      },
-    ],
-    // Neutral enquiry categories. These describe what you can write to us
-    // about — they are not a list of confirmed services or capabilities.
-    chips: [
-      "Plumbing enquiry",
-      "Gasfitting enquiry",
-      "Property or site details",
-      "General question",
-    ],
+    id: "services",
+    eyebrow: "PLUMBING & GASFITTING SERVICES",
+    heading: "The right starting point for every plumbing job.",
+    body: "Explore general repairs, blocked drains, hot water systems, gas fitting, leak repairs and commercial maintenance.",
+    actions: [{ label: "Explore services", href: "/services", variant: "primary" }],
+    supporting: serviceLine,
     photo: heroPhotos.slide2,
-    visual: "photo",
   },
   {
-    id: "local-proof",
-    eyebrow: "Local business details",
-    heading: `Based in ${business.address.locality}.`,
-    copy: `Speak directly with ${business.displayName} or view the business location.`,
-    details: [
-      { label: "Address", value: business.address.singleLine },
-      { label: "Phone", value: business.phone.display },
-      { label: "ABN", value: business.abn },
-    ],
+    id: "location",
+    eyebrow: "ROCKHAMPTON CITY",
+    heading: `Find ${business.shortName} in ${business.address.locality}.`,
+    body: business.address.singleLine,
     actions: [
-      { label: "Get directions", href: directionsUrl, variant: "primary" },
       {
-        label: "Call the business",
-        href: business.phone.href,
-        variant: "outline-inverse",
-        isPhone: true,
+        label: "Get directions",
+        href: directionsUrl,
+        variant: "primary",
+        external: true,
       },
     ],
+    supporting: `${business.legalName} · ABN ${business.abn}`,
+    /**
+     * No photograph is published here yet.
+     *
+     * Slide 3 needs either client-approved premises photography or an
+     * accurately sourced Rockhampton image. Neither has been supplied, and
+     * publishing an arbitrary streetscape beneath "Find Hohmanns in
+     * Rockhampton City" would imply a location identity the image does not
+     * have. The branded navy treatment is used until a real photograph
+     * arrives; see CONTENT_CONFIRMATION.md.
+     */
     photo: null,
-    visual: "map",
   },
 ];
